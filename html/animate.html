@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动画原理(缓动原理)</title>
+    <style>
+        .box {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background-color: #188eee;
+        }
+    </style>
+</head>
+
+<body>
+    <div class='box'></div>
+    <script src="./../js/animate.js"></script>
+    <script>
+        window.onload = function() {
+            var obj = document.querySelector('.box');
+            // 调用自己封装的动画函数
+            var callback = null; //
+            animate(obj, 400, callback);
+        }
+    </script>
+</body>
+
+</html>
