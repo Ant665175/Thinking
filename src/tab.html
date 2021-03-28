@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tab实例</title>
+    <style>
+        ul {
+            margin: 0;
+            padding: 0;
+        }
+        
+        li {
+            list-style: none;
+        }
+        
+        .wrap {
+            width: 500px;
+            height: 350px;
+            margin: 0 auto;
+            border: 1px solid #ddd;
+        }
+        
+        .tab-head {
+            height: 35px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab-head ul {
+            display: flex;
+            flex-flow: row nowrap;
+            justify-content: flex-start;
+        }
+        
+        .tab-head ul li {
+            width: 50px;
+            line-height: 35px;
+            text-align: center;
+            border-right: 1px solid #ddd;
+            user-select: none;
+            cursor: pointer;
+        }
+        
+        .tab-panel div {
+            display: none;
+        }
+        
+        .tab-panel .show-panel {
+            display: block;
+        }
+        
+        .active {
+            color: #fff;
+            background: #188eee;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="tab" class="wrap">
+        <div class="tab-head">
+            <ul>
+                <li>11</li>
+                <li>22</li>
+                <li>33</li>
+            </ul>
+        </div>
+        <div class="tab-panel">
+            <div>0001</div>
+            <div>0002</div>
+            <div>0003</div>
+        </div>
+    </div>
+
+    <div id="scroll" class="wrap">
+        <div class="tab-head">
+            <ul>
+                <li>11</li>
+                <li>22</li>
+                <li>33</li>
+            </ul>
+        </div>
+        <div class="tab-panel">
+            <div>0001</div>
+            <div>0002</div>
+            <div>0003</div>
+        </div>
+    </div>
+
+    <script>
+        // 参数设计
+        // 接口设计
+        // 可复用 可拓展
+        function Tab(tabId, activeIndex) {
+            this.init(tabId, activeIndex);
+        }
+        Tab.prototype.init = function(tabId, activeIndex = 0) {
+            if (!tabId) return;
+            this.wrapper = document.getElementById(tabId);
+            this.tabs = this.wrapper.querySelectorAll('li');
+            this.panels = this.wrapper.querySelectorAll('.tab-panel div');
+            this.active(activeIndex)
+            this.events();
+        }
+        Tab.prototype.active = function(index) {
+            if (this.currentIndex === index) {
+                return;
+            } else if (typeof this.currentIndex === 'number') {
+                this.tabs[this.currentIndex].classList.remove('active');
+                this.panels[this.currentIndex].classList.remove('show-panel')
+            }
+            this.tabs[index].classList.add('active');
+            this.panels[index].classList.add('show-panel')
+
+            this.currentIndex = index;
+        }
+
+        Tab.prototype.events = function() {
+            let len = this.tabs.length;
+            var that = this;
+            for (let i = 0; i < len; i++) {
+                // this.tabs[i].addEventListener('click', () => {
+                // 箭头函数的this指向的是定义的上下文
+                //     this.active(i);
+                // })
+                this.tabs[i].addEventListener('click', function() {
+                    // 函数声明中的this指向的是调用他的上下文  
+                    that.active(i);
+                })
+            }
+        }
+        var tab1 = new Tab('tab', 1);
+
+        // 写一个轮播图，继承来自tab
+        function Scroll(scrollId, index) {
+            Tab.call(this, scrollId, index);
+        }
+
+        Scroll.prototype = new Tab();
+        Scroll.prototype.constructor = Scroll;
+
+        var scroll = new Scroll('scroll', 1);
+        console.log(scroll)
+    </script>
+</body>
+
+</html>
