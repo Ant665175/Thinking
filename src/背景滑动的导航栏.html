@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>背景跟随滑动的导航栏</title>
+    <style>
+        ul {
+            margin: 0;
+            padding: 0;
+        }
+        
+        li {
+            list-style: none;
+        }
+        
+        .nav-box {
+            position: relative;
+            width: 600px;
+            height: 45px;
+            border: 1px solid #ddd;
+            /* box-shadow: 0 1px 2px 0px #ddd; */
+            margin: 0 auto;
+            background-color: snow;
+        }
+        
+        .nav-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100px;
+            height: 45px;
+            background-color: #188eee;
+        }
+        
+        .nav-wrap {
+            position: absolute;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .nav-wrap li {
+            flex: 1;
+            text-align: center;
+            line-height: 45px;
+            user-select: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="nav-box">
+        <span class="nav-bg"></span>
+        <ul class="nav-wrap">
+            <li>00001</li>
+            <li>00002</li>
+            <li>00003</li>
+            <li>00004</li>
+            <li>00005</li>
+            <li>00006</li>
+        </ul>
+    </div>
+    <script>
+        var oNavBg = document.querySelector('.nav-bg');
+        var oNavWrap = document.querySelector('.nav-wrap');
+        // 记录当前li
+        var curIndex = 0;
+        // 缓动动画
+        // var timer = unll;
+        // var flag = true;
+        //动画封装
+        function animate(obj, target, callback) {
+            // 原来想做一个节流阀的 ，但是交互体验不好所以取消了
+            // 如果是做轮播图的倒是可以加一个节流阀
+            // if (flag) {
+            //     flag = false;
+            clearInterval(obj.timer);
+            var step = 0;
+            // 注意这里是给对象添加属性 提高性能
+            obj.timer = setInterval(() => {
+                if (obj.offsetLeft === target) {
+                    clearInterval(obj.timer);
+                    callback && callback();
+                };
+                step = (target - obj.offsetLeft) / 10;
+                if (step > 0) {
+                    step = Math.ceil(step);
+                } else {
+                    step = Math.floor(step);
+                }
+                obj.style.left = obj.offsetLeft + step + 'px';
+            }, 20);
+
+            // }
+        }
+
+        var lis = document.querySelectorAll('li');
+        for (var i = 0; i < lis.length; i++) {
+            lis[i].setAttribute('data-index', i);
+        }
+        // 给 ul 添加鼠标事件
+        oNavWrap.addEventListener('mouseover', function(e) {
+            e = e || window.event;
+            var li = e.target;
+            var x = li.offsetLeft;
+            animate(oNavBg, x, function() {
+                // flag = true;
+            });
+        })
+        oNavWrap.addEventListener('click', function(e) {
+            e = e || window.event;
+            // 这里如果点击的是ul 那么将会报错 所以判断一下
+            curIndex = e.target.dataset.index || curIndex;
+        })
+        oNavWrap.addEventListener('mouseleave', function(e) {
+            console.log(curIndex);
+            var x = oNavWrap.children[curIndex].offsetLeft;
+            animate(oNavBg, x, function() {
+                // 原来想做一个节流阀的 ，但是交互体验不好所以取消了
+                // flag = true;
+            });
+        })
+
+        // 方法二
+        // 给每个li 添加鼠标事件
+        // var lis = document.querySelectorAll('li');
+        // for (var i = 0; i < lis.length; i++) {
+        //     lis[i].addEventListener('mouseenter', function(e) {
+        //         console.log('132132132131')
+        //         e = e || window.event;
+        //         // var li = e.target;
+        //         // console.log(e.target);
+        //         var x = this.offsetLeft;
+        //         // oNavBg.style.left = x + 'px';
+        //         console.log(x);
+        //         animate(oNavBg, x, function() {
+        //             // flag = true;
+        //         });
+        //     })
+        // }
+    </script>
+</body>
+
+</html>

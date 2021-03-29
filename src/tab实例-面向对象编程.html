@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tab实例</title>
+    <style>
+        .tab-wrap {
+            width: 1000px;
+            height: 650px;
+            margin: 50px auto;
+            border: 1px solid #344a34;
+        }
+        
+        .tab-head {
+            display: flex;
+            flex-flow: row nowrap;
+            justify-content: space-between;
+            width: 100%;
+            height: 50px;
+            border: 1px solid #ddd;
+        }
+        
+        .tab-head ul {
+            display: flex;
+            flex-flow: row nowrap;
+            justify-content: start;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .tab-head ul li {
+            position: relative;
+            list-style: none;
+            line-height: 50px;
+            text-align: center;
+            padding: 0 20px;
+            border-right: 1px solid #ddd;
+            overflow: hidden;
+        }
+        
+        .tab-head ul li span:first-child {
+            user-select: none;
+        }
+        
+        .tab-head ul li span input {
+            width: 100px;
+            height: 35px;
+            line-height: 35px;
+            outline: none;
+            border: none;
+            /* border-bottom: 1px solid #454645; */
+        }
+        
+        .liactive {
+            color: #fff;
+            background-color: #188eee;
+        }
+        
+        .icon-guanbi {
+            position: absolute;
+            top: -6px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            transform: rotate( 45deg);
+            background-color: #454645;
+            text-align: center;
+            line-height: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            color: #ddd;
+        }
+        
+        .tab-head .tabadd span {
+            font-size: 26px;
+            line-height: 50px;
+            text-align: center;
+            padding: 0 20px;
+            cursor: pointer;
+        }
+        
+        .item-con section {
+            display: none;
+        }
+        
+        .item-con .conactive {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="tab" class="tab-wrap ">
+        <div class="tab-head firstnav">
+            <ul>
+                <li class="liactive"><span>tab1</span><span class="icon-guanbi">+</span></li>
+                <li><span>tab2</span><span class="icon-guanbi">+</span></li>
+            </ul>
+            <div class="tabadd">
+                <span>+</span>
+            </div>
+        </div>
+        <div class="item-con">
+            <section class="conactive">111111111111</section>
+            <section>222222222222</section>
+        </div>
+    </div>
+
+    <script>
+        var that;
+        class Tab {
+            constructor(id) {
+                // 获取元素
+                that = this;
+                this.main = document.querySelector(id);
+                this.add = this.main.querySelector('.tabadd');
+                this.ul = this.main.querySelector('.tab-head ul:first-child');
+                this.fsection = this.main.querySelector('.item-con');
+                this.init();
+            }
+
+            // 初始化操作 让相关元素绑定事件
+            init() {
+                    this.updateNode();
+                    this.add.onclick = this.addTab;
+                    for (var i = 0; i < this.lis.length; i++) {
+                        this.lis[i].setAttribute('data-index', i);
+
+                        // 这里为啥不能使用事件监听来写呢？？？？？？？？
+                        // this.lis[i].addEventListener('click', (e) => {
+                        //     console.log(this)
+                        //     console.log(this.dataset.index);
+                        // })
+
+                        // 切换功能在toggleTab 里面写  这里不要使用匿名函数
+                        // this.lis[i].onclick = function() {
+                        //     console.log(this.dataset.index)
+                        // }
+
+                        // 所以这里要这么做 不要有() 不然就直接调用了
+                        this.lis[i].onclick = this.toggleTab;
+                        this.remove[i].onclick = this.removeTab;
+                        this.spans[i].ondblclick = this.editTab;
+                        this.sections[i].ondblclick = this.editTab;
+                    }
+                }
+                //
+            updateNode() {
+                this.lis = this.main.querySelectorAll('li');
+                this.sections = this.main.querySelectorAll('section');
+                this.remove = this.main.querySelectorAll('.icon-guanbi');
+                this.spans = this.main.querySelectorAll('.firstnav ul li span:first-child');
+
+            }
+
+            // 1. 切换功能
+            toggleTab() {
+                    console.log(this.dataset.index);
+                    that.clearClass();
+                    this.className = 'liactive';
+                    that.sections[this.dataset.index].className = 'conactive';
+
+                }
+                // 
+            clearClass() {
+                for (var i = 0; i < this.lis.length; i++) {
+                    this.lis[i].className = '';
+                    this.sections[i].className = '';
+                }
+            }
+
+            // 2. 添加功能
+            addTab() {
+                //  1.创建li 和section
+                var random = Math.random();
+                var li = '<li class="liactive"><span>new tab</span><span class="icon-guanbi">+</span></li>';
+                var section = '<section class="conactive">请修改内容' + random + '</section>';
+                that.clearClass();
+                // 1.把这两个元素追加到对应的父元素里面
+                that.ul.insertAdjacentHTML('beforeend', li);
+                that.fsection.insertAdjacentHTML('beforeend', section);
+                that.init();
+
+            }
+
+            // 3. 删除功能e.stopPropagation();
+            removeTab(e) {
+                e.stopPropagation(); // 阻止冒泡
+                var index = this.parentNode.dataset.index;
+                console.log('关闭', index);
+                that.lis[index].remove();
+                that.sections[index].parentNode.removeChild(that.sections[index]);
+                that.init();
+                // 如果删除的不是选中状态的li
+                if (that.main.querySelector('.liactive')) return;
+                // 删除后让第一个处于选中状态
+                // 1. 给对应的选项卡添加状态
+                // 2. 手动调用点击事件
+                index--;
+                if (that.lis[index] && that.lis[index].click()) return;
+                that.lis[++index] && that.lis[index].click();
+            }
+
+            // 4. 修改功能e
+            editTab() {
+                // window.getSelection ? window.getSelection().removeAllRanges() : document.selection.empty();
+                var text = this.innerHTML;
+                this.innerHTML = '<input type="text" value="' + text + '"/>'
+                var input = this.children[0];
+                input.select();
+                input.onblur = function() {
+                    text = this.value;
+                    this.parentNode.innerHTML = text;
+                    // this.parentNode.removeChild()
+                }
+
+                //按下回车键
+                input.onkeyup = function(e) {
+                    if (e.keyCode === 13) {
+                        this.blur();
+                    }
+                }
+            }
+
+        }
+
+        var tab = new Tab('#tab');
+    </script>
+</body>
+
+</html>

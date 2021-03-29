@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>主图放大镜</title>
+    <style>
+        body {
+            margin: 0;
+        }
+        
+        .wrap {
+            position: relative;
+            margin: 200px;
+            width: 533px;
+            height: 300px;
+            border: 1px solid #34495e;
+        }
+        
+        .mask {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 150px;
+            height: 150px;
+            background-color: yellow;
+            opacity: 0.3;
+        }
+        
+        .big {
+            display: none;
+            position: absolute;
+            top: -50px;
+            left: 550px;
+            width: 400px;
+            height: 400px;
+            overflow: hidden;
+            z-index: 10;
+            border: 1px solid #7f8c8d;
+        }
+        
+        .bigImg {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <div class="box">
+            <img src="./../img/03.jpg" alt="">
+            <div class="mask"></div>
+            <div class="big">
+                <img class="bigImg" src="./../img/03.jpg" width="900" alt="">
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        var oMask = document.querySelector('.mask');
+        var oImg = document.querySelector('.wrap');
+        var oBjg = document.querySelector('.big');
+        var moveX = 0;
+        var moveY = 0;
+        // 2.显示隐藏
+        oImg.addEventListener('mouseenter', function() {
+            oMask.style.display = 'block';
+            oBjg.style.display = 'block';
+        });
+        oImg.addEventListener('mouseleave', function() {
+            oMask.style.display = 'none';
+            oBjg.style.display = 'none';
+        });
+        // 1. mask 跟随
+        oImg.addEventListener('mousemove', function(e) {
+            // var mW = oMask.offsetWidth;
+            // var mH = oMask.offsetHeight;
+            e = e || window.event;
+            moveX = e.pageX - oImg.offsetTop - oMask.offsetWidth / 2;
+            moveY = e.pageY - oImg.offsetLeft - oMask.offsetHeight / 2;
+            var maxX = oImg.offsetWidth - oMask.offsetWidth;
+            var maxY = oImg.offsetHeight - oMask.offsetHeight;
+
+            if (moveX < 0) {
+                moveX = 0;
+            } else if (moveX > maxX) {
+                moveX = maxX;
+            }
+            if (moveY <= 0) {
+                moveY = 0;
+            } else if (moveY >= maxY) {
+                moveY = maxY;
+            }
+            oMask.style.left = moveX + 'px';
+            oMask.style.top = moveY + 'px';
+            // 3.big跟随
+            // 移动比例 
+            var bigImg = document.querySelector('.bigImg');
+            var bigMaxX = bigImg.offsetWidth - oBjg.offsetWidth;
+            var bigMaxY = bigImg.offsetHeight - oBjg.offsetHeight;
+            var bigMoveX = bigMaxX * moveX / maxX;
+            var bigMoveY = bigMaxY * moveY / maxY;
+            bigImg.style.left = -bigMoveX + 'px';
+            bigImg.style.top = -bigMoveY + 'px';
+
+        })
+    </script>
+</body>
+
+</html>
